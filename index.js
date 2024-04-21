@@ -76,6 +76,8 @@ const keys  = {
 // --------------------------------------------------------
 // -------------- ainmation recursive loop ----------------
 // --------------------------------------------------------
+let scrollOffset = 0
+
 function animate() {
     requestAnimationFrame(animate);
     c.clearRect(0, 0, canvas.width, canvas.height);
@@ -92,10 +94,12 @@ function animate() {
         player.velocity.x = 0;
 
         if (keys.right.pressed) {
+            scrollOffset += 5;
             platforms.forEach((platform) => {
                 platform.position.x -= 5;
             });
         } else if (keys.left.pressed) {
+            scrollOffset -= 5;
             platforms.forEach((platform) => {
                 platform.position.x += 5;
             });
@@ -114,6 +118,10 @@ function animate() {
             player.velocity.y = 0;
         }
     });
+
+    if (scrollOffset >  2000) {
+        console.log('game over')
+    }
 }   
 
 animate()
