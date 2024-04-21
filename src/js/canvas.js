@@ -1,9 +1,11 @@
+import platform from '../assets/platforms/elementWood012.png'
+
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
 // canvas size
-canvas.width = window.innerWidth
-canvas.height = window.innerHeight
+canvas.width = 1024
+canvas.height = 576
 
 
 //  ------------- gravity ----------------
@@ -44,22 +46,27 @@ class Player {
 // --------------  platform  ------------------------------
 // --------------------------------------------------------
 class Platform {
-    constructor({x, y}) {
+    constructor({x, y, image}) {
         this.position = {x: x, y: y}
-        this.width = 200
-        this.height = 20
+        this.image = image
+        this.width = image.width
+        this.height = image.height
+        
     }
 
     draw() {
-        c.fillStyle = 'green' 
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        c.drawImage(this.image, this.position.x, this.position.y)
     }
 }
 
-
+const image = new Image()
+image.src = platform
 
 const player = new Player()
-const platforms =[ new Platform({x: 200, y: 400}), new Platform({x: 600, y: 300})]
+const platforms = [
+    new Platform({ x: 200, y: 400, image: image }),
+    new Platform({ x: 600, y: 300, image: image }),
+];
 
 
 // keys object
@@ -80,11 +87,13 @@ let scrollOffset = 0
 
 function animate() {
     requestAnimationFrame(animate);
-    c.clearRect(0, 0, canvas.width, canvas.height);
-    player.update();
+    c.fillStyle = 'white';
+    c.fillRect(0, 0, canvas.width, canvas.height);
     platforms.forEach((platform) => {
         platform.draw();
     });
+    player.update();
+
 
     if (keys.right.pressed && player.position.x < 400) {
         player.velocity.x = 5;
@@ -119,6 +128,8 @@ function animate() {
         }
     });
 
+
+    // win scenario
     if (scrollOffset >  2000) {
         console.log('game over')
     }
