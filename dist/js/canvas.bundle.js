@@ -86,6 +86,32 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/assets/background.png":
+/*!***********************************!*\
+  !*** ./src/assets/background.png ***!
+  \***********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "072d51bcc9c09311d4c2a6708b05bddc.png");
+
+/***/ }),
+
+/***/ "./src/assets/hills.png":
+/*!******************************!*\
+  !*** ./src/assets/hills.png ***!
+  \******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "cfffe4c371f5e11d372b398a87c51dd0.png");
+
+/***/ }),
+
 /***/ "./src/assets/platforms/elementWood012.png":
 /*!*************************************************!*\
   !*** ./src/assets/platforms/elementWood012.png ***!
@@ -99,6 +125,19 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/assets/platforms/ground_platform.png":
+/*!**************************************************!*\
+  !*** ./src/assets/platforms/ground_platform.png ***!
+  \**************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "a5a600bb9b99206c08cccde622cd6c77.png");
+
+/***/ }),
+
 /***/ "./src/js/canvas.js":
 /*!**************************!*\
   !*** ./src/js/canvas.js ***!
@@ -109,11 +148,17 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _assets_platforms_elementWood012_png__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../assets/platforms/elementWood012.png */ "./src/assets/platforms/elementWood012.png");
+/* harmony import */ var _assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../assets/platforms/ground_platform.png */ "./src/assets/platforms/ground_platform.png");
+/* harmony import */ var _assets_hills_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../assets/hills.png */ "./src/assets/hills.png");
+/* harmony import */ var _assets_background_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../assets/background.png */ "./src/assets/background.png");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
 
 
 var canvas = document.querySelector('canvas');
@@ -194,19 +239,77 @@ var Platform = /*#__PURE__*/function () {
   }]);
 
   return Platform;
+}(); // --------------------------------------------------------
+// --------------  Generic Object  ------------------------------
+// --------------------------------------------------------
+
+
+var GenericObject = /*#__PURE__*/function () {
+  function GenericObject(_ref2) {
+    var x = _ref2.x,
+        y = _ref2.y,
+        image = _ref2.image;
+
+    _classCallCheck(this, GenericObject);
+
+    this.position = {
+      x: x,
+      y: y
+    };
+    this.image = image;
+    this.width = image.width;
+    this.height = image.height;
+  }
+
+  _createClass(GenericObject, [{
+    key: "draw",
+    value: function draw() {
+      c.drawImage(this.image, this.position.x, this.position.y);
+    }
+  }]);
+
+  return GenericObject;
 }();
 
-var image = new Image();
-image.src = _assets_platforms_elementWood012_png__WEBPACK_IMPORTED_MODULE_0__["default"];
+function createImage(imgSrc) {
+  var image = new Image();
+  image.src = imgSrc;
+  return image;
+}
+
+var groundImage = createImage(_assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__["default"]);
+var platformImage = createImage(_assets_platforms_elementWood012_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
 var player = new Player();
-var platforms = [new Platform({
-  x: 200,
-  y: 400,
-  image: image
+var genericObjects = [new GenericObject({
+  x: -1,
+  y: -1,
+  image: createImage(_assets_background_png__WEBPACK_IMPORTED_MODULE_3__["default"])
+}), new GenericObject({
+  x: 0,
+  y: 0,
+  image: createImage(_assets_hills_png__WEBPACK_IMPORTED_MODULE_2__["default"])
+})];
+var groundPlatforms = [new Platform({
+  x: 0,
+  y: 500,
+  image: createImage(_assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__["default"])
 }), new Platform({
-  x: 600,
+  x: groundImage.width,
+  y: 500,
+  image: createImage(_assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__["default"])
+}), new Platform({
+  x: groundImage.width * 2,
+  y: 500,
+  image: createImage(_assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__["default"])
+})];
+var platforms = [new Platform({
+  x: 400,
   y: 300,
-  image: image
+  image: createImage(_assets_platforms_elementWood012_png__WEBPACK_IMPORTED_MODULE_0__["default"])
+}), new Platform({
+  x: 780,
+  y: 200,
+  image: createImage(_assets_platforms_elementWood012_png__WEBPACK_IMPORTED_MODULE_0__["default"])
 })]; // keys object
 
 var keys = {
@@ -226,6 +329,12 @@ function animate() {
   requestAnimationFrame(animate);
   c.fillStyle = 'white';
   c.fillRect(0, 0, canvas.width, canvas.height);
+  genericObjects.forEach(function (genericObject) {
+    genericObject.draw();
+  });
+  groundPlatforms.forEach(function (ground) {
+    ground.draw();
+  });
   platforms.forEach(function (platform) {
     platform.draw();
   });
@@ -240,11 +349,23 @@ function animate() {
 
     if (keys.right.pressed) {
       scrollOffset += 5;
+      genericObjects.forEach(function (ground) {
+        ground.position.x -= 2;
+      });
+      groundPlatforms.forEach(function (ground) {
+        ground.position.x -= 5;
+      });
       platforms.forEach(function (platform) {
         platform.position.x -= 5;
       });
     } else if (keys.left.pressed) {
       scrollOffset -= 5;
+      genericObjects.forEach(function (ground) {
+        ground.position.x += 2;
+      });
+      groundPlatforms.forEach(function (ground) {
+        ground.position.x += 5;
+      });
       platforms.forEach(function (platform) {
         platform.position.x += 5;
       });
@@ -253,6 +374,11 @@ function animate() {
 
 
   platforms.forEach(function (platform) {
+    if (player.position.y + player.height <= platform.position.y && player.position.y + player.height + player.velocity.y >= platform.position.y && player.position.x + player.width >= platform.position.x && player.position.x <= platform.position.x + platform.width) {
+      player.velocity.y = 0;
+    }
+  });
+  groundPlatforms.forEach(function (platform) {
     if (player.position.y + player.height <= platform.position.y && player.position.y + player.height + player.velocity.y >= platform.position.y && player.position.x + player.width >= platform.position.x && player.position.x <= platform.position.x + platform.width) {
       player.velocity.y = 0;
     }
@@ -267,8 +393,8 @@ animate(); // --------------------------------------------------------
 // --------------  event listeners ------------------------
 // --------------------------------------------------------
 
-window.addEventListener('keydown', function (_ref2) {
-  var code = _ref2.code;
+window.addEventListener('keydown', function (_ref3) {
+  var code = _ref3.code;
 
   switch (code) {
     case 'KeyA':
@@ -288,8 +414,8 @@ window.addEventListener('keydown', function (_ref2) {
       break;
   }
 });
-window.addEventListener('keyup', function (_ref3) {
-  var code = _ref3.code;
+window.addEventListener('keyup', function (_ref4) {
+  var code = _ref4.code;
 
   switch (code) {
     case 'KeyA':

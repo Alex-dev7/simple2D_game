@@ -1,4 +1,7 @@
 import platform from '../assets/platforms/elementWood012.png'
+import groundPlatform from '../assets/platforms/ground_platform.png'
+import hills from '../assets/hills.png'
+import background from '../assets/background.png'
 
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
@@ -59,13 +62,54 @@ class Platform {
     }
 }
 
-const image = new Image()
-image.src = platform
+
+// --------------------------------------------------------
+// --------------  Generic Object  ------------------------------
+// --------------------------------------------------------
+class GenericObject {
+    constructor({x, y, image}) {
+        this.position = {x: x, y: y}
+        this.image = image
+        this.width = image.width
+        this.height = image.height
+        
+    }
+
+    draw() {
+        c.drawImage(this.image, this.position.x, this.position.y)
+    }
+}
+
+
+function createImage(imgSrc){
+    const image = new Image()
+    image.src = imgSrc
+    return image
+}
+
+
+const groundImage = createImage(groundPlatform)
+const platformImage = createImage(platform)
 
 const player = new Player()
+
+
+const genericObjects = [
+    new GenericObject({x: -1, y: -1, image: createImage(background)}),
+    new GenericObject({x: 0, y: 0, image: createImage(hills)}),
+]
+
+
+
+const groundPlatforms = [
+    new Platform({ x: 0, y: 500, image: createImage(groundPlatform) }),
+    new Platform({ x: groundImage.width, y: 500, image: createImage(groundPlatform)}),
+    new Platform({ x: groundImage.width * 2, y: 500, image: createImage(groundPlatform) }),
+
+];
 const platforms = [
-    new Platform({ x: 200, y: 400, image: image }),
-    new Platform({ x: 600, y: 300, image: image }),
+    new Platform({ x: 400, y: 300, image: createImage(platform) }),
+    new Platform({ x: 780, y: 200, image: createImage(platform) }),
 ];
 
 
@@ -89,6 +133,14 @@ function animate() {
     requestAnimationFrame(animate);
     c.fillStyle = 'white';
     c.fillRect(0, 0, canvas.width, canvas.height);
+
+    genericObjects.forEach(genericObject => {
+        genericObject.draw()
+    
+    })
+    groundPlatforms.forEach((ground) => {
+        ground.draw();
+    });
     platforms.forEach((platform) => {
         platform.draw();
     });
@@ -104,11 +156,23 @@ function animate() {
 
         if (keys.right.pressed) {
             scrollOffset += 5;
+            genericObjects.forEach((ground) => {
+                ground.position.x -= 2;
+            });
+            groundPlatforms.forEach((ground) => {
+                ground.position.x -= 5;
+            });
             platforms.forEach((platform) => {
                 platform.position.x -= 5;
             });
         } else if (keys.left.pressed) {
             scrollOffset -= 5;
+            genericObjects.forEach((ground) => {
+                ground.position.x += 2;
+            });
+            groundPlatforms.forEach((ground) => {
+                ground.position.x += 5;
+            });
             platforms.forEach((platform) => {
                 platform.position.x += 5;
             });
@@ -117,6 +181,17 @@ function animate() {
 
     // platform collision detection
     platforms.forEach((platform) => {
+        if (
+            player.position.y + player.height <= platform.position.y &&
+            player.position.y + player.height + player.velocity.y >=
+                platform.position.y &&
+            player.position.x + player.width >= platform.position.x &&
+            player.position.x <= platform.position.x + platform.width
+        ) {
+            player.velocity.y = 0;
+        }
+    });
+    groundPlatforms.forEach((platform) => {
         if (
             player.position.y + player.height <= platform.position.y &&
             player.position.y + player.height + player.velocity.y >=
