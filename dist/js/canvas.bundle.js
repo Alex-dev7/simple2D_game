@@ -175,6 +175,7 @@ var Player = /*#__PURE__*/function () {
   function Player() {
     _classCallCheck(this, Player);
 
+    this.speed = 10;
     this.position = {
       x: 100,
       y: 100
@@ -279,37 +280,9 @@ function createImage(imgSrc) {
 var groundImage = createImage(_assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__["default"]);
 var platformImage = createImage(_assets_platforms_elementWood012_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
 var player = new Player();
-var genericObjects = [new GenericObject({
-  x: -1,
-  y: -1,
-  image: createImage(_assets_background_png__WEBPACK_IMPORTED_MODULE_3__["default"])
-}), new GenericObject({
-  x: 0,
-  y: 0,
-  image: createImage(_assets_hills_png__WEBPACK_IMPORTED_MODULE_2__["default"])
-})];
-var groundPlatforms = [new Platform({
-  x: 0,
-  y: 500,
-  image: createImage(_assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__["default"])
-}), new Platform({
-  x: groundImage.width + 100,
-  y: 500,
-  image: createImage(_assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__["default"])
-}), new Platform({
-  x: groundImage.width * 2,
-  y: 500,
-  image: createImage(_assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__["default"])
-})];
-var platforms = [new Platform({
-  x: 400,
-  y: 300,
-  image: createImage(_assets_platforms_elementWood012_png__WEBPACK_IMPORTED_MODULE_0__["default"])
-}), new Platform({
-  x: 780,
-  y: 200,
-  image: createImage(_assets_platforms_elementWood012_png__WEBPACK_IMPORTED_MODULE_0__["default"])
-})]; // keys object
+var genericObjects = [];
+var groundPlatforms = [];
+var platforms = []; // keys object
 
 var keys = {
   right: {
@@ -380,33 +353,33 @@ function animate() {
   player.update();
 
   if (keys.right.pressed && player.position.x < 400) {
-    player.velocity.x = 5;
-  } else if (keys.left.pressed && player.position.x > 100) {
-    player.velocity.x = -5;
+    player.velocity.x = player.speed;
+  } else if (keys.left.pressed && player.position.x > 100 || keys.left.pressed && scrollOffset === 0 && player.position.x > 0) {
+    player.velocity.x = -player.speed;
   } else {
     player.velocity.x = 0;
 
     if (keys.right.pressed) {
-      scrollOffset += 5;
+      scrollOffset += player.speed;
       genericObjects.forEach(function (ground) {
-        ground.position.x -= 2;
+        ground.position.x -= player.speed * .66;
       });
       groundPlatforms.forEach(function (ground) {
-        ground.position.x -= 5;
+        ground.position.x -= player.speed;
       });
       platforms.forEach(function (platform) {
-        platform.position.x -= 5;
+        platform.position.x -= player.speed;
       });
-    } else if (keys.left.pressed) {
-      scrollOffset -= 5;
+    } else if (keys.left.pressed && scrollOffset > 0) {
+      scrollOffset -= player.speed;
       genericObjects.forEach(function (ground) {
-        ground.position.x += 2;
+        ground.position.x += player.speed * .66;
       });
       groundPlatforms.forEach(function (ground) {
-        ground.position.x += 5;
+        ground.position.x += player.speed;
       });
       platforms.forEach(function (platform) {
-        platform.position.x += 5;
+        platform.position.x += player.speed;
       });
     }
   } // platform collision detection
@@ -423,7 +396,7 @@ function animate() {
     }
   }); // win scenario
 
-  if (scrollOffset > 2000) {
+  if (scrollOffset > groundImage.width * 2 + 100) {
     console.log('game over');
   } // lose scenario
 
@@ -433,6 +406,7 @@ function animate() {
   }
 }
 
+init();
 animate(); // --------------------------------------------------------
 // --------------  event listeners ------------------------
 // --------------------------------------------------------
@@ -454,7 +428,7 @@ window.addEventListener('keydown', function (_ref3) {
       break;
 
     case 'KeyW':
-      player.velocity.y -= 20;
+      player.velocity.y -= 15;
       break;
   }
 });
@@ -475,7 +449,7 @@ window.addEventListener('keyup', function (_ref4) {
       break;
 
     case 'KeyW':
-      player.velocity.y = 0;
+      // player.velocity.y = 0
       break;
   }
 });

@@ -20,6 +20,7 @@ const gravity = 0.5
 // --------------------------------------------------------
 class Player {
     constructor() {
+        this.speed = 10
         this.position = { x: 100, y: 100 }
         this.velocity = { x: 0, y : 0}
         this.width = 30
@@ -92,28 +93,9 @@ let platformImage = createImage(platform);
 
 let player = new Player();
 
-let genericObjects = [
-    new GenericObject({ x: -1, y: -1, image: createImage(background) }),
-    new GenericObject({ x: 0, y: 0, image: createImage(hills) }),
-];
-
-let groundPlatforms = [
-    new Platform({ x: 0, y: 500, image: createImage(groundPlatform) }),
-    new Platform({
-        x: groundImage.width + 100,
-        y: 500,
-        image: createImage(groundPlatform),
-    }),
-    new Platform({
-        x: groundImage.width * 2,
-        y: 500,
-        image: createImage(groundPlatform),
-    }),
-];
-let platforms = [
-    new Platform({ x: 400, y: 300, image: createImage(platform) }),
-    new Platform({ x: 780, y: 200, image: createImage(platform) }),
-];
+let genericObjects = [];
+let groundPlatforms = [];
+let platforms = [];
 
 
 // keys object
@@ -190,33 +172,33 @@ function animate() {
 
 
     if (keys.right.pressed && player.position.x < 400) {
-        player.velocity.x = 5;
-    } else if (keys.left.pressed && player.position.x > 100) {
-        player.velocity.x = -5;
+        player.velocity.x = player.speed
+    } else if ((keys.left.pressed && player.position.x > 100) || (keys.left.pressed && scrollOffset === 0 && player.position.x > 0)) {
+        player.velocity.x = -player.speed;
     } else {
         player.velocity.x = 0;
 
         if (keys.right.pressed) {
-            scrollOffset += 5;
+            scrollOffset += player.speed
             genericObjects.forEach((ground) => {
-                ground.position.x -= 2;
+                ground.position.x -= player.speed * .66
             });
             groundPlatforms.forEach((ground) => {
-                ground.position.x -= 5;
+                ground.position.x -= player.speed
             });
             platforms.forEach((platform) => {
-                platform.position.x -= 5;
+                platform.position.x -= player.speed
             });
-        } else if (keys.left.pressed) {
-            scrollOffset -= 5;
+        } else if (keys.left.pressed && scrollOffset > 0) {
+            scrollOffset -= player.speed
             genericObjects.forEach((ground) => {
-                ground.position.x += 2;
+                ground.position.x += player.speed * .66;
             });
             groundPlatforms.forEach((ground) => {
-                ground.position.x += 5;
+                ground.position.x += player.speed
             });
             platforms.forEach((platform) => {
-                platform.position.x += 5;
+                platform.position.x += player.speed
             });
         }
     }
@@ -247,7 +229,7 @@ function animate() {
 
 
     // win scenario
-    if (scrollOffset >  2000) {
+    if (scrollOffset > groundImage.width * 2 + 100) {
         console.log('game over')
     }
 
@@ -257,6 +239,7 @@ function animate() {
     }
 }   
 
+init()
 animate()
 
 
@@ -276,7 +259,7 @@ window.addEventListener('keydown', ({code}) => {
             keys.right.pressed = true
             break
         case 'KeyW':
-            player.velocity.y -= 20 
+            player.velocity.y -= 15
             break
     }
 })
@@ -293,7 +276,7 @@ window.addEventListener('keyup', ({code}) => {
             keys.right.pressed = false
             break
         case 'KeyW':
-            player.velocity.y = 0
+            // player.velocity.y = 0
             break
     }
 })
