@@ -202,8 +202,7 @@ var Player = /*#__PURE__*/function () {
 
       if (this.position.y + this.height + this.velocity.y <= canvas.height) {
         this.velocity.y += gravity;
-      } else {
-        this.velocity.y = 0;
+      } else {// this.velocity.y = 0
       }
     }
   }]);
@@ -294,7 +293,7 @@ var groundPlatforms = [new Platform({
   y: 500,
   image: createImage(_assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__["default"])
 }), new Platform({
-  x: groundImage.width,
+  x: groundImage.width + 100,
   y: 500,
   image: createImage(_assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__["default"])
 }), new Platform({
@@ -319,11 +318,51 @@ var keys = {
   left: {
     pressed: false
   }
-}; // --------------------------------------------------------
+};
+var scrollOffset = 0; // --------------------------------------------------------
+// --------------  init function --------------------------
+// --------------------------------------------------------
+
+function init() {
+  groundImage = createImage(_assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__["default"]);
+  platformImage = createImage(_assets_platforms_elementWood012_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
+  player = new Player();
+  genericObjects = [new GenericObject({
+    x: -1,
+    y: -1,
+    image: createImage(_assets_background_png__WEBPACK_IMPORTED_MODULE_3__["default"])
+  }), new GenericObject({
+    x: 0,
+    y: 0,
+    image: createImage(_assets_hills_png__WEBPACK_IMPORTED_MODULE_2__["default"])
+  })];
+  groundPlatforms = [new Platform({
+    x: 0,
+    y: 500,
+    image: createImage(_assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__["default"])
+  }), new Platform({
+    x: groundImage.width + 100,
+    y: 500,
+    image: createImage(_assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__["default"])
+  }), new Platform({
+    x: groundImage.width * 2,
+    y: 500,
+    image: createImage(_assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__["default"])
+  })];
+  platforms = [new Platform({
+    x: 400,
+    y: 300,
+    image: createImage(_assets_platforms_elementWood012_png__WEBPACK_IMPORTED_MODULE_0__["default"])
+  }), new Platform({
+    x: 780,
+    y: 200,
+    image: createImage(_assets_platforms_elementWood012_png__WEBPACK_IMPORTED_MODULE_0__["default"])
+  })];
+  scrollOffset = 0;
+} // --------------------------------------------------------
 // -------------- ainmation recursive loop ----------------
 // --------------------------------------------------------
 
-var scrollOffset = 0;
 
 function animate() {
   requestAnimationFrame(animate);
@@ -386,6 +425,11 @@ function animate() {
 
   if (scrollOffset > 2000) {
     console.log('game over');
+  } // lose scenario
+
+
+  if (player.position.y > canvas.height) {
+    init();
   }
 }
 

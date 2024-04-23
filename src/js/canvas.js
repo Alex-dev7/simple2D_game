@@ -40,7 +40,7 @@ class Player {
         this.velocity.y += gravity
         }
         else {
-            this.velocity.y = 0
+            // this.velocity.y = 0
         }
     }
 }
@@ -87,27 +87,30 @@ function createImage(imgSrc){
     return image
 }
 
+let groundImage = createImage(groundPlatform);
+let platformImage = createImage(platform);
 
-const groundImage = createImage(groundPlatform)
-const platformImage = createImage(platform)
+let player = new Player();
 
-const player = new Player()
-
-
-const genericObjects = [
-    new GenericObject({x: -1, y: -1, image: createImage(background)}),
-    new GenericObject({x: 0, y: 0, image: createImage(hills)}),
-]
-
-
-
-const groundPlatforms = [
-    new Platform({ x: 0, y: 500, image: createImage(groundPlatform) }),
-    new Platform({ x: groundImage.width, y: 500, image: createImage(groundPlatform)}),
-    new Platform({ x: groundImage.width * 2, y: 500, image: createImage(groundPlatform) }),
-
+let genericObjects = [
+    new GenericObject({ x: -1, y: -1, image: createImage(background) }),
+    new GenericObject({ x: 0, y: 0, image: createImage(hills) }),
 ];
-const platforms = [
+
+let groundPlatforms = [
+    new Platform({ x: 0, y: 500, image: createImage(groundPlatform) }),
+    new Platform({
+        x: groundImage.width + 100,
+        y: 500,
+        image: createImage(groundPlatform),
+    }),
+    new Platform({
+        x: groundImage.width * 2,
+        y: 500,
+        image: createImage(groundPlatform),
+    }),
+];
+let platforms = [
     new Platform({ x: 400, y: 300, image: createImage(platform) }),
     new Platform({ x: 780, y: 200, image: createImage(platform) }),
 ];
@@ -123,11 +126,50 @@ const keys  = {
     },
 }
 
+let scrollOffset = 0
+
+
+// --------------------------------------------------------
+// --------------  init function --------------------------
+// --------------------------------------------------------
+
+function init() {
+    groundImage = createImage(groundPlatform);
+    platformImage = createImage(platform);
+
+    player = new Player();
+
+    genericObjects = [
+        new GenericObject({ x: -1, y: -1, image: createImage(background) }),
+        new GenericObject({ x: 0, y: 0, image: createImage(hills) }),
+    ];
+
+    groundPlatforms = [
+        new Platform({ x: 0, y: 500, image: createImage(groundPlatform) }),
+        new Platform({
+            x: groundImage.width + 100,
+            y: 500,
+            image: createImage(groundPlatform),
+        }),
+        new Platform({
+            x: groundImage.width * 2,
+            y: 500,
+            image: createImage(groundPlatform),
+        }),
+    ];
+    platforms = [
+        new Platform({ x: 400, y: 300, image: createImage(platform) }),
+        new Platform({ x: 780, y: 200, image: createImage(platform) }),
+    ];
+
+    scrollOffset = 0
+}
+
 
 // --------------------------------------------------------
 // -------------- ainmation recursive loop ----------------
 // --------------------------------------------------------
-let scrollOffset = 0
+
 
 function animate() {
     requestAnimationFrame(animate);
@@ -207,6 +249,11 @@ function animate() {
     // win scenario
     if (scrollOffset >  2000) {
         console.log('game over')
+    }
+
+    // lose scenario
+    if (player.position.y > canvas.height) {
+        init()
     }
 }   
 
