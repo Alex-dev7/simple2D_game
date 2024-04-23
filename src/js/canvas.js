@@ -3,6 +3,13 @@ import groundPlatform from '../assets/platforms/ground_platform.png'
 import hills from '../assets/hills.png'
 import background from '../assets/background.png'
 
+import runLeft from '../assets/movement/runLeft.png'
+import runRight from '../assets/movement/rightRun.png'
+import jump from '../assets/movement/jump.png'
+import restingRight from '../assets/movement/resting.png'
+import restingLeft from '../assets/movement/restLeft.png'
+
+
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
@@ -20,27 +27,69 @@ const gravity = 0.5
 // --------------------------------------------------------
 class Player {
     constructor() {
-        this.speed = 10
-        this.position = { x: 100, y: 100 }
-        this.velocity = { x: 0, y : 0}
-        this.width = 30
-        this.height = 30
+        this.speed = 10;
+        this.position = { x: 100, y: 100 };
+        this.velocity = { x: 0, y: 0 };
+        this.width = 120;
+        this.height = 120;
+        this.image = createImage(restingRight);
+        this.frames = 0;
+        this.frameDelay = 0; 
+        this.frameDelayMax = this.image.width / 32; 
+        this.sprites = {
+            stand: {
+                right: createImage(restingRight),
+                left: createImage(restingLeft)
+            },
+            run: {
+                right: createImage(runRight),
+                left: createImage(runLeft)
+            },
+            jump: {
+                right: createImage(jump),
+                left: createImage(jump)
+            },  
+        };
+        this.currentSprite = this.sprites.stand.right
+    
     }
 
     draw() {
-        c.fillStyle = 'red'
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        c.drawImage(
+            this.currentSprite,
+            // img crop
+            32 * this.frames, 
+            0,
+            32,  
+            32,
+            this.position.x,
+            this.position.y,
+            this.width,
+            this.height
+        );
     }
 
     update() {
-        this.draw()
-        this.position.y += this.velocity.y
-        this.position.x += this.velocity.x
-
-        if(this.position.y + this.height + this.velocity.y <= canvas.height) {
-        this.velocity.y += gravity
+        this.frameDelay += 1
+        if (this.frameDelay > this.frameDelayMax) {
+            this.frames += 1
+            this.frameDelay = 0;
+            if(this.frames === 8) {
+                this.frames = 0
+            }
+            
         }
-        else {
+        // if(this.frames === 8) {
+        //     this.frames = 0
+        // }
+
+        this.draw();
+        this.position.y += this.velocity.y;
+        this.position.x += this.velocity.x;
+
+        if (this.position.y + this.height + this.velocity.y <= canvas.height) {
+            this.velocity.y += gravity;
+        } else {
             // this.velocity.y = 0
         }
     }
@@ -106,6 +155,9 @@ const keys  = {
     left: {
         pressed: false
     },
+    up: {
+        pressed: false
+    }
 }
 
 let scrollOffset = 0
@@ -251,15 +303,19 @@ window.addEventListener('keydown', ({code}) => {
     switch(code) {
         case 'KeyA':
             keys.left.pressed = true
+            player.currentSprite = player.sprites.run.left
             break
         case 'KeyS':
             console.log(code)
             break
         case 'KeyD':
             keys.right.pressed = true
+            player.currentSprite = player.sprites.run.right
             break
         case 'KeyW':
-            player.velocity.y -= 15
+            keys.up.pressed = true
+            //  player.currentSprite = player.sprites.jump.right
+            player.velocity.y -= 20
             break
     }
 })
@@ -268,15 +324,20 @@ window.addEventListener('keyup', ({code}) => {
     switch(code) {
         case 'KeyA':
             keys.left.pressed = false
+            player.currentSprite = player.sprites.stand.left
             break
         case 'KeyS':
             console.log(code)
             break
         case 'KeyD':
             keys.right.pressed = false
+            player.currentSprite = player.sprites.stand.right
             break
         case 'KeyW':
-            // player.velocity.y = 0
+            keys.up.pressed = false
+            player.velocity.y = 0
+            // player.currentSprite = player.sprites.stand.right
+           
             break
     }
 })

@@ -112,6 +112,71 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/assets/movement/jump.png":
+/*!**************************************!*\
+  !*** ./src/assets/movement/jump.png ***!
+  \**************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "9cd2cef75e3e71b6d822022297785587.png");
+
+/***/ }),
+
+/***/ "./src/assets/movement/restLeft.png":
+/*!******************************************!*\
+  !*** ./src/assets/movement/restLeft.png ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "677845330d43fa72e2cb3d73d6ee61af.png");
+
+/***/ }),
+
+/***/ "./src/assets/movement/resting.png":
+/*!*****************************************!*\
+  !*** ./src/assets/movement/resting.png ***!
+  \*****************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "7bd0462865d087909e39cc93f55b806c.png");
+
+/***/ }),
+
+/***/ "./src/assets/movement/rightRun.png":
+/*!******************************************!*\
+  !*** ./src/assets/movement/rightRun.png ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "16dcdd8ffdca2888d63a56a91b38cad9.png");
+
+/***/ }),
+
+/***/ "./src/assets/movement/runLeft.png":
+/*!*****************************************!*\
+  !*** ./src/assets/movement/runLeft.png ***!
+  \*****************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "aaa1cb2330ae1ddf5b51dc10dc924ad4.png");
+
+/***/ }),
+
 /***/ "./src/assets/platforms/elementWood012.png":
 /*!*************************************************!*\
   !*** ./src/assets/platforms/elementWood012.png ***!
@@ -151,11 +216,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _assets_platforms_ground_platform_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../assets/platforms/ground_platform.png */ "./src/assets/platforms/ground_platform.png");
 /* harmony import */ var _assets_hills_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../assets/hills.png */ "./src/assets/hills.png");
 /* harmony import */ var _assets_background_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../assets/background.png */ "./src/assets/background.png");
+/* harmony import */ var _assets_movement_runLeft_png__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../assets/movement/runLeft.png */ "./src/assets/movement/runLeft.png");
+/* harmony import */ var _assets_movement_rightRun_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../assets/movement/rightRun.png */ "./src/assets/movement/rightRun.png");
+/* harmony import */ var _assets_movement_jump_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../assets/movement/jump.png */ "./src/assets/movement/jump.png");
+/* harmony import */ var _assets_movement_resting_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../assets/movement/resting.png */ "./src/assets/movement/resting.png");
+/* harmony import */ var _assets_movement_restLeft_png__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../assets/movement/restLeft.png */ "./src/assets/movement/restLeft.png");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+
+
 
 
 
@@ -184,19 +259,52 @@ var Player = /*#__PURE__*/function () {
       x: 0,
       y: 0
     };
-    this.width = 30;
-    this.height = 30;
+    this.width = 120;
+    this.height = 120;
+    this.image = createImage(_assets_movement_resting_png__WEBPACK_IMPORTED_MODULE_7__["default"]);
+    this.frames = 0;
+    this.frameDelay = 0;
+    this.frameDelayMax = this.image.width / 32;
+    this.sprites = {
+      stand: {
+        right: createImage(_assets_movement_resting_png__WEBPACK_IMPORTED_MODULE_7__["default"]),
+        left: createImage(_assets_movement_restLeft_png__WEBPACK_IMPORTED_MODULE_8__["default"])
+      },
+      run: {
+        right: createImage(_assets_movement_rightRun_png__WEBPACK_IMPORTED_MODULE_5__["default"]),
+        left: createImage(_assets_movement_runLeft_png__WEBPACK_IMPORTED_MODULE_4__["default"])
+      },
+      jump: {
+        right: createImage(_assets_movement_jump_png__WEBPACK_IMPORTED_MODULE_6__["default"]),
+        left: createImage(_assets_movement_jump_png__WEBPACK_IMPORTED_MODULE_6__["default"])
+      }
+    };
+    this.currentSprite = this.sprites.stand.right;
   }
 
   _createClass(Player, [{
     key: "draw",
     value: function draw() {
-      c.fillStyle = 'red';
-      c.fillRect(this.position.x, this.position.y, this.width, this.height);
+      c.drawImage(this.currentSprite, // img crop
+      32 * this.frames, 0, 32, 32, this.position.x, this.position.y, this.width, this.height);
     }
   }, {
     key: "update",
     value: function update() {
+      this.frameDelay += 1;
+
+      if (this.frameDelay > this.frameDelayMax) {
+        this.frames += 1;
+        this.frameDelay = 0;
+
+        if (this.frames === 8) {
+          this.frames = 0;
+        }
+      } // if(this.frames === 8) {
+      //     this.frames = 0
+      // }
+
+
       this.draw();
       this.position.y += this.velocity.y;
       this.position.x += this.velocity.x;
@@ -289,6 +397,9 @@ var keys = {
     pressed: false
   },
   left: {
+    pressed: false
+  },
+  up: {
     pressed: false
   }
 };
@@ -417,6 +528,7 @@ window.addEventListener('keydown', function (_ref3) {
   switch (code) {
     case 'KeyA':
       keys.left.pressed = true;
+      player.currentSprite = player.sprites.run.left;
       break;
 
     case 'KeyS':
@@ -425,10 +537,13 @@ window.addEventListener('keydown', function (_ref3) {
 
     case 'KeyD':
       keys.right.pressed = true;
+      player.currentSprite = player.sprites.run.right;
       break;
 
     case 'KeyW':
-      player.velocity.y -= 15;
+      keys.up.pressed = true; //  player.currentSprite = player.sprites.jump.right
+
+      player.velocity.y -= 20;
       break;
   }
 });
@@ -438,6 +553,7 @@ window.addEventListener('keyup', function (_ref4) {
   switch (code) {
     case 'KeyA':
       keys.left.pressed = false;
+      player.currentSprite = player.sprites.stand.left;
       break;
 
     case 'KeyS':
@@ -446,10 +562,13 @@ window.addEventListener('keyup', function (_ref4) {
 
     case 'KeyD':
       keys.right.pressed = false;
+      player.currentSprite = player.sprites.stand.right;
       break;
 
     case 'KeyW':
-      // player.velocity.y = 0
+      keys.up.pressed = false;
+      player.velocity.y = 0; // player.currentSprite = player.sprites.stand.right
+
       break;
   }
 });
