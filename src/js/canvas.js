@@ -5,7 +5,8 @@ import background from '../assets/background.png'
 
 import runLeft from '../assets/movement/runLeft.png'
 import runRight from '../assets/movement/rightRun.png'
-import jump from '../assets/movement/jump.png'
+import jumpRight from '../assets/movement/jumpRight.png'
+import jumpLeft from '../assets/movement/jumpLeft.png'
 import restingRight from '../assets/movement/resting.png'
 import restingLeft from '../assets/movement/restLeft.png'
 
@@ -35,7 +36,7 @@ class Player {
         this.image = createImage(restingRight);
         this.frames = 0;
         this.frameDelay = 0; 
-        this.frameDelayMax = this.image.width / 32; 
+        this.frameDelayMax = 10; 
         this.sprites = {
             stand: {
                 right: createImage(restingRight),
@@ -46,8 +47,8 @@ class Player {
                 left: createImage(runLeft)
             },
             jump: {
-                right: createImage(jump),
-                left: createImage(jump)
+                right: createImage(jumpRight),
+                left: createImage(jumpLeft)
             },  
         };
         this.currentSprite = this.sprites.stand.right
@@ -70,7 +71,7 @@ class Player {
     }
 
     update() {
-        this.frameDelay += 1
+        this.frameDelay += 2
         if (this.frameDelay > this.frameDelayMax) {
             this.frames += 1
             this.frameDelay = 0;
@@ -157,10 +158,11 @@ const keys  = {
     },
     up: {
         pressed: false
-    }
+    }, 
 }
 
 let scrollOffset = 0
+let orientation = true // if true player is facing right, if false player is facing left
 
 
 // --------------------------------------------------------
@@ -304,6 +306,7 @@ window.addEventListener('keydown', ({code}) => {
         case 'KeyA':
             keys.left.pressed = true
             player.currentSprite = player.sprites.run.left
+            orientation = false
             break
         case 'KeyS':
             console.log(code)
@@ -311,11 +314,30 @@ window.addEventListener('keydown', ({code}) => {
         case 'KeyD':
             keys.right.pressed = true
             player.currentSprite = player.sprites.run.right
+            orientation = true
             break
         case 'KeyW':
             keys.up.pressed = true
-            //  player.currentSprite = player.sprites.jump.right
-            player.velocity.y -= 20
+            if (keys.up.pressed) {
+                keys.up.pressed = false
+                 player.velocity.y = -10
+                 
+            }
+           
+          
+            if(keys.right.pressed) {
+                player.currentSprite = player.sprites.jump.right
+            } else if (keys.left.pressed) {
+                player.currentSprite = player.sprites.jump.left
+            }
+            if (orientation){
+                player.currentSprite = player.sprites.jump.right
+              
+            } else {
+                player.currentSprite = player.sprites.jump.left
+                }
+           
+            
             break
     }
 })
@@ -334,9 +356,24 @@ window.addEventListener('keyup', ({code}) => {
             player.currentSprite = player.sprites.stand.right
             break
         case 'KeyW':
-            keys.up.pressed = false
+            // keys.up.pressed = false
+            if(keys.right.pressed) {
+                 player.currentSprite = player.sprites.run.right
+                 orientation = true
+            } else if (keys.left.pressed) {
+                player.currentSprite = player.sprites.run.left
+                orientation = false
+            }
+
+            if (orientation && !keys.right.pressed ){
+                player.currentSprite = player.sprites.stand.right
+              
+            } else if (!orientation && !keys.left.pressed ) {
+                player.currentSprite = player.sprites.stand.left
+                }
+           
             player.velocity.y = 0
-            // player.currentSprite = player.sprites.stand.right
+            
            
             break
     }

@@ -112,16 +112,29 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/assets/movement/jump.png":
-/*!**************************************!*\
-  !*** ./src/assets/movement/jump.png ***!
-  \**************************************/
+/***/ "./src/assets/movement/jumpLeft.png":
+/*!******************************************!*\
+  !*** ./src/assets/movement/jumpLeft.png ***!
+  \******************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "9cd2cef75e3e71b6d822022297785587.png");
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "f7b9e7c03fb918ff4d5749430d22fa2b.png");
+
+/***/ }),
+
+/***/ "./src/assets/movement/jumpRight.png":
+/*!*******************************************!*\
+  !*** ./src/assets/movement/jumpRight.png ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "9485ac180e476a803523b5992fc641e5.png");
 
 /***/ }),
 
@@ -218,14 +231,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _assets_background_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../assets/background.png */ "./src/assets/background.png");
 /* harmony import */ var _assets_movement_runLeft_png__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../assets/movement/runLeft.png */ "./src/assets/movement/runLeft.png");
 /* harmony import */ var _assets_movement_rightRun_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../assets/movement/rightRun.png */ "./src/assets/movement/rightRun.png");
-/* harmony import */ var _assets_movement_jump_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../assets/movement/jump.png */ "./src/assets/movement/jump.png");
-/* harmony import */ var _assets_movement_resting_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../assets/movement/resting.png */ "./src/assets/movement/resting.png");
-/* harmony import */ var _assets_movement_restLeft_png__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../assets/movement/restLeft.png */ "./src/assets/movement/restLeft.png");
+/* harmony import */ var _assets_movement_jumpRight_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../assets/movement/jumpRight.png */ "./src/assets/movement/jumpRight.png");
+/* harmony import */ var _assets_movement_jumpLeft_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../assets/movement/jumpLeft.png */ "./src/assets/movement/jumpLeft.png");
+/* harmony import */ var _assets_movement_resting_png__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../assets/movement/resting.png */ "./src/assets/movement/resting.png");
+/* harmony import */ var _assets_movement_restLeft_png__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../assets/movement/restLeft.png */ "./src/assets/movement/restLeft.png");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -261,22 +276,22 @@ var Player = /*#__PURE__*/function () {
     };
     this.width = 120;
     this.height = 120;
-    this.image = createImage(_assets_movement_resting_png__WEBPACK_IMPORTED_MODULE_7__["default"]);
+    this.image = createImage(_assets_movement_resting_png__WEBPACK_IMPORTED_MODULE_8__["default"]);
     this.frames = 0;
     this.frameDelay = 0;
-    this.frameDelayMax = this.image.width / 32;
+    this.frameDelayMax = 10;
     this.sprites = {
       stand: {
-        right: createImage(_assets_movement_resting_png__WEBPACK_IMPORTED_MODULE_7__["default"]),
-        left: createImage(_assets_movement_restLeft_png__WEBPACK_IMPORTED_MODULE_8__["default"])
+        right: createImage(_assets_movement_resting_png__WEBPACK_IMPORTED_MODULE_8__["default"]),
+        left: createImage(_assets_movement_restLeft_png__WEBPACK_IMPORTED_MODULE_9__["default"])
       },
       run: {
         right: createImage(_assets_movement_rightRun_png__WEBPACK_IMPORTED_MODULE_5__["default"]),
         left: createImage(_assets_movement_runLeft_png__WEBPACK_IMPORTED_MODULE_4__["default"])
       },
       jump: {
-        right: createImage(_assets_movement_jump_png__WEBPACK_IMPORTED_MODULE_6__["default"]),
-        left: createImage(_assets_movement_jump_png__WEBPACK_IMPORTED_MODULE_6__["default"])
+        right: createImage(_assets_movement_jumpRight_png__WEBPACK_IMPORTED_MODULE_6__["default"]),
+        left: createImage(_assets_movement_jumpLeft_png__WEBPACK_IMPORTED_MODULE_7__["default"])
       }
     };
     this.currentSprite = this.sprites.stand.right;
@@ -291,7 +306,7 @@ var Player = /*#__PURE__*/function () {
   }, {
     key: "update",
     value: function update() {
-      this.frameDelay += 1;
+      this.frameDelay += 2;
 
       if (this.frameDelay > this.frameDelayMax) {
         this.frames += 1;
@@ -403,7 +418,9 @@ var keys = {
     pressed: false
   }
 };
-var scrollOffset = 0; // --------------------------------------------------------
+var scrollOffset = 0;
+var orientation = true; // if true player is facing right, if false player is facing left
+// --------------------------------------------------------
 // --------------  init function --------------------------
 // --------------------------------------------------------
 
@@ -529,6 +546,7 @@ window.addEventListener('keydown', function (_ref3) {
     case 'KeyA':
       keys.left.pressed = true;
       player.currentSprite = player.sprites.run.left;
+      orientation = false;
       break;
 
     case 'KeyS':
@@ -538,12 +556,29 @@ window.addEventListener('keydown', function (_ref3) {
     case 'KeyD':
       keys.right.pressed = true;
       player.currentSprite = player.sprites.run.right;
+      orientation = true;
       break;
 
     case 'KeyW':
-      keys.up.pressed = true; //  player.currentSprite = player.sprites.jump.right
+      keys.up.pressed = true;
 
-      player.velocity.y -= 20;
+      if (keys.up.pressed) {
+        keys.up.pressed = false;
+        player.velocity.y = -10;
+      }
+
+      if (keys.right.pressed) {
+        player.currentSprite = player.sprites.jump.right;
+      } else if (keys.left.pressed) {
+        player.currentSprite = player.sprites.jump.left;
+      }
+
+      if (orientation) {
+        player.currentSprite = player.sprites.jump.right;
+      } else {
+        player.currentSprite = player.sprites.jump.left;
+      }
+
       break;
   }
 });
@@ -566,9 +601,22 @@ window.addEventListener('keyup', function (_ref4) {
       break;
 
     case 'KeyW':
-      keys.up.pressed = false;
-      player.velocity.y = 0; // player.currentSprite = player.sprites.stand.right
+      // keys.up.pressed = false
+      if (keys.right.pressed) {
+        player.currentSprite = player.sprites.run.right;
+        orientation = true;
+      } else if (keys.left.pressed) {
+        player.currentSprite = player.sprites.run.left;
+        orientation = false;
+      }
 
+      if (orientation && !keys.right.pressed) {
+        player.currentSprite = player.sprites.stand.right;
+      } else if (!orientation && !keys.left.pressed) {
+        player.currentSprite = player.sprites.stand.left;
+      }
+
+      player.velocity.y = 0;
       break;
   }
 });
