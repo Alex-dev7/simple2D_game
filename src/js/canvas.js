@@ -146,7 +146,7 @@ let player = new Player();
 let genericObjects = [];
 let groundPlatforms = [];
 let platforms = [];
-
+let lastKey;
 
 // keys object
 const keys  = {
@@ -208,90 +208,150 @@ function init() {
 
 
 function animate() {
-    requestAnimationFrame(animate);
-    c.fillStyle = 'white';
-    c.fillRect(0, 0, canvas.width, canvas.height);
+                       requestAnimationFrame(animate);
+                       c.fillStyle = "white";
+                       c.fillRect(0, 0, canvas.width, canvas.height);
 
-    genericObjects.forEach(genericObject => {
-        genericObject.draw()
-    
-    })
-    groundPlatforms.forEach((ground) => {
-        ground.draw();
-    });
-    platforms.forEach((platform) => {
-        platform.draw();
-    });
-    player.update();
+                       genericObjects.forEach((genericObject) => {
+                           genericObject.draw();
+                       });
+                       groundPlatforms.forEach((ground) => {
+                           ground.draw();
+                       });
+                       platforms.forEach((platform) => {
+                           platform.draw();
+                       });
+                       player.update();
 
+                       if (keys.right.pressed && player.position.x < 400) {
+                           player.velocity.x = player.speed;
+                       } else if (
+                           (keys.left.pressed && player.position.x > 100) ||
+                           (keys.left.pressed &&
+                               scrollOffset === 0 &&
+                               player.position.x > 0)
+                       ) {
+                           player.velocity.x = -player.speed;
+                       } else {
+                           player.velocity.x = 0;
 
-    if (keys.right.pressed && player.position.x < 400) {
-        player.velocity.x = player.speed
-    } else if ((keys.left.pressed && player.position.x > 100) || (keys.left.pressed && scrollOffset === 0 && player.position.x > 0)) {
-        player.velocity.x = -player.speed;
-    } else {
-        player.velocity.x = 0;
+                           if (keys.right.pressed) {
+                               scrollOffset += player.speed;
+                               genericObjects.forEach((ground) => {
+                                   ground.position.x -= player.speed * 0.66;
+                               });
+                               groundPlatforms.forEach((ground) => {
+                                   ground.position.x -= player.speed;
+                               });
+                               platforms.forEach((platform) => {
+                                   platform.position.x -= player.speed;
+                               });
+                           } else if (keys.left.pressed && scrollOffset > 0) {
+                               scrollOffset -= player.speed;
+                               genericObjects.forEach((ground) => {
+                                   ground.position.x += player.speed * 0.66;
+                               });
+                               groundPlatforms.forEach((ground) => {
+                                   ground.position.x += player.speed;
+                               });
+                               platforms.forEach((platform) => {
+                                   platform.position.x += player.speed;
+                               });
+                           }
+                       }
 
-        if (keys.right.pressed) {
-            scrollOffset += player.speed
-            genericObjects.forEach((ground) => {
-                ground.position.x -= player.speed * .66
-            });
-            groundPlatforms.forEach((ground) => {
-                ground.position.x -= player.speed
-            });
-            platforms.forEach((platform) => {
-                platform.position.x -= player.speed
-            });
-        } else if (keys.left.pressed && scrollOffset > 0) {
-            scrollOffset -= player.speed
-            genericObjects.forEach((ground) => {
-                ground.position.x += player.speed * .66;
-            });
-            groundPlatforms.forEach((ground) => {
-                ground.position.x += player.speed
-            });
-            platforms.forEach((platform) => {
-                platform.position.x += player.speed
-            });
-        }
-    }
+                       // platform collision detection
+                       platforms.forEach((platform) => {
+                           if (
+                               player.position.y + player.height <=
+                                   platform.position.y &&
+                               player.position.y +
+                                   player.height +
+                                   player.velocity.y >=
+                                   platform.position.y &&
+                               player.position.x + player.width >=
+                                   platform.position.x &&
+                               player.position.x <=
+                                   platform.position.x + platform.width
+                           ) {
+                               player.velocity.y = 0;
+                           }
+                       });
+                       groundPlatforms.forEach((platform) => {
+                           if (
+                               player.position.y + player.height <=
+                                   platform.position.y &&
+                               player.position.y +
+                                   player.height +
+                                   player.velocity.y >=
+                                   platform.position.y &&
+                               player.position.x + player.width >=
+                                   platform.position.x &&
+                               player.position.x <=
+                                   platform.position.x + platform.width
+                           ) {
+                               player.velocity.y = 0;
+                           }
+                       });
 
-    // platform collision detection
-    platforms.forEach((platform) => {
-        if (
-            player.position.y + player.height <= platform.position.y &&
-            player.position.y + player.height + player.velocity.y >=
-                platform.position.y &&
-            player.position.x + player.width >= platform.position.x &&
-            player.position.x <= platform.position.x + platform.width
-        ) {
-            player.velocity.y = 0;
-        }
-    });
-    groundPlatforms.forEach((platform) => {
-        if (
-            player.position.y + player.height <= platform.position.y &&
-            player.position.y + player.height + player.velocity.y >=
-                platform.position.y &&
-            player.position.x + player.width >= platform.position.x &&
-            player.position.x <= platform.position.x + platform.width
-        ) {
-            player.velocity.y = 0;
-        }
-    });
+                       // player sprite change
+                       if (
+                           keys.right.pressed &&
+                           lastKey === "right" &&
+                           player.currentSprite !== player.sprites.run.right
+                       ) {
+                           player.frames = 1;
+                           player.currentSprite = player.sprites.run.right;
+                       } else if (
+                           keys.left.pressed &&
+                           lastKey === "left" &&
+                           player.currentSprite !== player.sprites.run.left
+                       ) {
+                           player.frames = 1;
+                           player.currentSprite = player.sprites.run.left;
+                       } else if (
+                           !keys.left.pressed &&
+                           lastKey === "left" &&
+                           player.currentSprite !== player.sprites.stand.left
+                       ) {
+                           player.currentSprite = player.sprites.stand.left;
+                       } else if (
+                           !keys.right.pressed &&
+                           lastKey === "right" &&
+                           player.currentSprite !== player.sprites.stand.right
+                       ) {
+                           player.currentSprite = player.sprites.stand.right;
+                       } else if (keys.up.pressed && lastKey === "up") {
+                           player.frames = 1;
+                           if (orientation) {
+                               player.currentSprite = player.sprites.jump.right;
+                           } else
+                               player.currentSprite = player.sprites.jump.left;
+                       } else if (!keys.up.pressed && lastKey === "up") {
+                           if (orientation && keys.right.pressed) {
+                               player.currentSprite = player.sprites.run.right;
+                           } else if (orientation && !keys.right.pressed) {
+                               player.currentSprite =
+                                   player.sprites.stand.right;
+                           }
 
+                           if (!orientation && keys.left.pressed) {
+                               player.currentSprite = player.sprites.run.left;
+                           } else if (!orientation && !keys.left.pressed) {
+                               player.currentSprite = player.sprites.stand.left;
+                           }
+                       }
 
-    // win scenario
-    if (scrollOffset > groundImage.width * 2 + 100) {
-        console.log('game over')
-    }
+                       // win scenario
+                       if (scrollOffset > groundImage.width * 2 + 100) {
+                           console.log("game over");
+                       }
 
-    // lose scenario
-    if (player.position.y > canvas.height) {
-        init()
-    }
-}   
+                       // lose scenario
+                       if (player.position.y > canvas.height) {
+                           init();
+                       }
+                   }   
 
 init()
 animate()
@@ -302,76 +362,40 @@ animate()
 // --------------------------------------------------------
 window.addEventListener('keydown', ({code}) => {
    
-    switch(code) {
-        case 'KeyA':
-            keys.left.pressed = true
-            player.currentSprite = player.sprites.run.left
-            orientation = false
-            break
-        case 'KeyS':
-            console.log(code)
-            break
-        case 'KeyD':
-            keys.right.pressed = true
-            player.currentSprite = player.sprites.run.right
-            orientation = true
-            break
-        case 'KeyW':
-            keys.up.pressed = true
-            if (keys.up.pressed) {
-                keys.up.pressed = false
-                 player.velocity.y = -10
-                 
-            }
-           
-          
-            if(keys.right.pressed) {
-                player.currentSprite = player.sprites.jump.right
-            } else if (keys.left.pressed) {
-                player.currentSprite = player.sprites.jump.left
-            }
-            if (orientation){
-                player.currentSprite = player.sprites.jump.right
-              
-            } else {
-                player.currentSprite = player.sprites.jump.left
-                }
-           
-            
-            break
+    switch (code) {
+        case "KeyA":
+            keys.left.pressed = true;
+            lastKey = "left";
+            orientation = false;
+            break;
+        case "KeyS":
+            break;
+        case "KeyD":
+            keys.right.pressed = true;
+            lastKey = "right";
+            orientation = true;
+            break;
+        case "KeyW":
+            keys.up.pressed = true;
+            lastKey = "up";
+            player.velocity.y = -16;
+            break;
     }
 })
+
 window.addEventListener('keyup', ({code}) => {
-   
     switch(code) {
         case 'KeyA':
             keys.left.pressed = false
-            player.currentSprite = player.sprites.stand.left
             break
         case 'KeyS':
             console.log(code)
             break
         case 'KeyD':
             keys.right.pressed = false
-            player.currentSprite = player.sprites.stand.right
             break
         case 'KeyW':
-            // keys.up.pressed = false
-            if(keys.right.pressed) {
-                 player.currentSprite = player.sprites.run.right
-                 orientation = true
-            } else if (keys.left.pressed) {
-                player.currentSprite = player.sprites.run.left
-                orientation = false
-            }
-
-            if (orientation && !keys.right.pressed ){
-                player.currentSprite = player.sprites.stand.right
-              
-            } else if (!orientation && !keys.left.pressed ) {
-                player.currentSprite = player.sprites.stand.left
-                }
-           
+            keys.up.pressed = false
             player.velocity.y = 0
             
            

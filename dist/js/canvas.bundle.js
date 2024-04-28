@@ -405,7 +405,8 @@ var platformImage = createImage(_assets_platforms_elementWood012_png__WEBPACK_IM
 var player = new Player();
 var genericObjects = [];
 var groundPlatforms = [];
-var platforms = []; // keys object
+var platforms = [];
+var lastKey; // keys object
 
 var keys = {
   right: {
@@ -467,7 +468,7 @@ function init() {
 
 function animate() {
   requestAnimationFrame(animate);
-  c.fillStyle = 'white';
+  c.fillStyle = "white";
   c.fillRect(0, 0, canvas.width, canvas.height);
   genericObjects.forEach(function (genericObject) {
     genericObject.draw();
@@ -490,7 +491,7 @@ function animate() {
     if (keys.right.pressed) {
       scrollOffset += player.speed;
       genericObjects.forEach(function (ground) {
-        ground.position.x -= player.speed * .66;
+        ground.position.x -= player.speed * 0.66;
       });
       groundPlatforms.forEach(function (ground) {
         ground.position.x -= player.speed;
@@ -501,7 +502,7 @@ function animate() {
     } else if (keys.left.pressed && scrollOffset > 0) {
       scrollOffset -= player.speed;
       genericObjects.forEach(function (ground) {
-        ground.position.x += player.speed * .66;
+        ground.position.x += player.speed * 0.66;
       });
       groundPlatforms.forEach(function (ground) {
         ground.position.x += player.speed;
@@ -522,10 +523,41 @@ function animate() {
     if (player.position.y + player.height <= platform.position.y && player.position.y + player.height + player.velocity.y >= platform.position.y && player.position.x + player.width >= platform.position.x && player.position.x <= platform.position.x + platform.width) {
       player.velocity.y = 0;
     }
-  }); // win scenario
+  }); // player sprite change
+
+  if (keys.right.pressed && lastKey === "right" && player.currentSprite !== player.sprites.run.right) {
+    player.frames = 1;
+    player.currentSprite = player.sprites.run.right;
+  } else if (keys.left.pressed && lastKey === "left" && player.currentSprite !== player.sprites.run.left) {
+    player.frames = 1;
+    player.currentSprite = player.sprites.run.left;
+  } else if (!keys.left.pressed && lastKey === "left" && player.currentSprite !== player.sprites.stand.left) {
+    player.currentSprite = player.sprites.stand.left;
+  } else if (!keys.right.pressed && lastKey === "right" && player.currentSprite !== player.sprites.stand.right) {
+    player.currentSprite = player.sprites.stand.right;
+  } else if (keys.up.pressed && lastKey === "up") {
+    player.frames = 1;
+
+    if (orientation) {
+      player.currentSprite = player.sprites.jump.right;
+    } else player.currentSprite = player.sprites.jump.left;
+  } else if (!keys.up.pressed && lastKey === "up") {
+    if (orientation && keys.right.pressed) {
+      player.currentSprite = player.sprites.run.right;
+    } else if (orientation && !keys.right.pressed) {
+      player.currentSprite = player.sprites.stand.right;
+    }
+
+    if (!orientation && keys.left.pressed) {
+      player.currentSprite = player.sprites.run.left;
+    } else if (!orientation && !keys.left.pressed) {
+      player.currentSprite = player.sprites.stand.left;
+    }
+  } // win scenario
+
 
   if (scrollOffset > groundImage.width * 2 + 100) {
-    console.log('game over');
+    console.log("game over");
   } // lose scenario
 
 
@@ -543,42 +575,25 @@ window.addEventListener('keydown', function (_ref3) {
   var code = _ref3.code;
 
   switch (code) {
-    case 'KeyA':
+    case "KeyA":
       keys.left.pressed = true;
-      player.currentSprite = player.sprites.run.left;
+      lastKey = "left";
       orientation = false;
       break;
 
-    case 'KeyS':
-      console.log(code);
+    case "KeyS":
       break;
 
-    case 'KeyD':
+    case "KeyD":
       keys.right.pressed = true;
-      player.currentSprite = player.sprites.run.right;
+      lastKey = "right";
       orientation = true;
       break;
 
-    case 'KeyW':
+    case "KeyW":
       keys.up.pressed = true;
-
-      if (keys.up.pressed) {
-        keys.up.pressed = false;
-        player.velocity.y = -10;
-      }
-
-      if (keys.right.pressed) {
-        player.currentSprite = player.sprites.jump.right;
-      } else if (keys.left.pressed) {
-        player.currentSprite = player.sprites.jump.left;
-      }
-
-      if (orientation) {
-        player.currentSprite = player.sprites.jump.right;
-      } else {
-        player.currentSprite = player.sprites.jump.left;
-      }
-
+      lastKey = "up";
+      player.velocity.y = -16;
       break;
   }
 });
@@ -588,7 +603,6 @@ window.addEventListener('keyup', function (_ref4) {
   switch (code) {
     case 'KeyA':
       keys.left.pressed = false;
-      player.currentSprite = player.sprites.stand.left;
       break;
 
     case 'KeyS':
@@ -597,25 +611,10 @@ window.addEventListener('keyup', function (_ref4) {
 
     case 'KeyD':
       keys.right.pressed = false;
-      player.currentSprite = player.sprites.stand.right;
       break;
 
     case 'KeyW':
-      // keys.up.pressed = false
-      if (keys.right.pressed) {
-        player.currentSprite = player.sprites.run.right;
-        orientation = true;
-      } else if (keys.left.pressed) {
-        player.currentSprite = player.sprites.run.left;
-        orientation = false;
-      }
-
-      if (orientation && !keys.right.pressed) {
-        player.currentSprite = player.sprites.stand.right;
-      } else if (!orientation && !keys.left.pressed) {
-        player.currentSprite = player.sprites.stand.left;
-      }
-
+      keys.up.pressed = false;
       player.velocity.y = 0;
       break;
   }
