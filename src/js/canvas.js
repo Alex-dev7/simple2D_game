@@ -1,7 +1,9 @@
 import platform from '../assets/platforms/elementWood012.png'
 import groundPlatform from '../assets/platforms/ground_platform.png'
-import hills from '../assets/hills.png'
+// import hills from '../assets/hills.png'
 import background from '../assets/background.png'
+import cityFront from '../assets/cityFront.png'
+import cityBack from '../assets/cityBack.png'
 
 import runLeft from '../assets/movement/runLeft.png'
 import runRight from '../assets/movement/rightRun.png'
@@ -20,7 +22,7 @@ canvas.height = 576
 
 
 //  ------------- gravity ----------------
-const gravity = 0.5
+const gravity = 0.9
 
 
 // --------------------------------------------------------
@@ -28,7 +30,7 @@ const gravity = 0.5
 // --------------------------------------------------------
 class Player {
     constructor() {
-        this.speed = 10;
+        this.speed = 8;
         this.position = { x: 100, y: 100 };
         this.velocity = { x: 0, y: 0 };
         this.width = 120;
@@ -80,9 +82,6 @@ class Player {
             }
             
         }
-        // if(this.frames === 8) {
-        //     this.frames = 0
-        // }
 
         this.draw();
         this.position.y += this.velocity.y;
@@ -118,12 +117,12 @@ class Platform {
 // --------------  Generic Object  ------------------------------
 // --------------------------------------------------------
 class GenericObject {
-    constructor({x, y, image}) {
+    constructor({x, y, image, parallaxDelay}) {
         this.position = {x: x, y: y}
         this.image = image
         this.width = image.width
         this.height = image.height
-        
+        this.parallaxDelay = parallaxDelay
     }
 
     draw() {
@@ -146,6 +145,9 @@ let player = new Player();
 let genericObjects = [];
 let groundPlatforms = [];
 let platforms = [];
+
+let scrollOffset = 0
+let orientation = true // if true player is facing right, if false player is facing left
 let lastKey;
 
 // keys object
@@ -161,8 +163,7 @@ const keys  = {
     }, 
 }
 
-let scrollOffset = 0
-let orientation = true // if true player is facing right, if false player is facing left
+
 
 
 // --------------------------------------------------------
@@ -176,14 +177,17 @@ function init() {
     player = new Player();
 
     genericObjects = [
-        new GenericObject({ x: -1, y: -1, image: createImage(background) }),
-        new GenericObject({ x: 0, y: 0, image: createImage(hills) }),
+        new GenericObject({ x: 0, y: 0, image: createImage(background), parallaxDelay: 1}),
+        new GenericObject({ x: 0, y: 220, image: createImage(cityBack), parallaxDelay: 1.5}),
+        new GenericObject({ x: 0, y: 220, image: createImage(cityFront), parallaxDelay: 2}),
+        new GenericObject({ x: 4000, y: 220, image: createImage(cityBack), parallaxDelay: 1.5}),
+        new GenericObject({ x: 4000, y: 220, image: createImage(cityFront), parallaxDelay: 2}),
     ];
 
     groundPlatforms = [
         new Platform({ x: 0, y: 500, image: createImage(groundPlatform) }),
         new Platform({
-            x: groundImage.width + 100,
+            x: groundImage.width + 200,
             y: 500,
             image: createImage(groundPlatform),
         }),
@@ -192,10 +196,25 @@ function init() {
             y: 500,
             image: createImage(groundPlatform),
         }),
+        new Platform({
+            x: groundImage.width * 3 + 400,
+            y: 500,
+            image: createImage(groundPlatform),
+        }),
+        new Platform({
+            x: groundImage.width * 4,
+            y: 500,
+            image: createImage(groundPlatform),
+        }),
     ];
     platforms = [
         new Platform({ x: 400, y: 300, image: createImage(platform) }),
         new Platform({ x: 780, y: 200, image: createImage(platform) }),
+        new Platform({ x: 1180, y: 200, image: createImage(platform) }),
+        new Platform({ x: 1480, y: 300, image: createImage(platform) }),
+        new Platform({ x: 3380, y: 100, image: createImage(platform) }),
+        new Platform({ x: 1980, y: 300, image: createImage(platform) }),
+        new Platform({ x: 3180, y: 270, image: createImage(platform) }),
     ];
 
     scrollOffset = 0
@@ -238,7 +257,7 @@ function animate() {
                            if (keys.right.pressed) {
                                scrollOffset += player.speed;
                                genericObjects.forEach((ground) => {
-                                   ground.position.x -= player.speed * 0.66;
+                                   ground.position.x -= (player.speed + ground.parallaxDelay) * 0.66;
                                });
                                groundPlatforms.forEach((ground) => {
                                    ground.position.x -= player.speed;
@@ -249,7 +268,7 @@ function animate() {
                            } else if (keys.left.pressed && scrollOffset > 0) {
                                scrollOffset -= player.speed;
                                genericObjects.forEach((ground) => {
-                                   ground.position.x += player.speed * 0.66;
+                                   ground.position.x += player.speed + ground.parallaxDelay  * 0.66;
                                });
                                groundPlatforms.forEach((ground) => {
                                    ground.position.x += player.speed;
